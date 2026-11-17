@@ -30,7 +30,12 @@ export function createWorld(random) {
       else if (cx >= 2560 && cx < 5120 && cy >= 2560 && cy < 5120) district = DISTRICTS.MARINA;
       else if (cx >= 5120) district = DISTRICTS.HILLS;
 
-      const height = Math.floor(20 + random() * 80);
+      let special = null;
+      if (bx === 6 && by === 6) special = 'parking';
+      else if (bx === 22 && by === 18) special = 'parking';
+      else if (bx === 12 && by === 22) special = 'park';
+
+      const height = special === 'park' ? 0 : (special === 'parking' ? 5 : Math.floor(20 + random() * 80));
       const palette = district === DISTRICTS.NEON_MILE ? ['#4a148c', '#6a1b9a', '#8e24aa', '#311b92', '#4527a0'] :
                       district === DISTRICTS.OLD_TOWN ? ['#b71c1c', '#d32f2f', '#8d6e63', '#6d4c41', '#a1887f'] :
                       district === DISTRICTS.MARINA ? ['#00838f', '#00acc1', '#0097a7', '#006064', '#00838f'] :
@@ -44,7 +49,8 @@ export function createWorld(random) {
         color: buildingColor,
         accent: district.accent,
         hasNeon: district === DISTRICTS.NEON_MILE && random() > 0.5,
-        hasLights: random() > 0.3
+        hasLights: random() > 0.3,
+        special
       });
     }
   }
@@ -64,6 +70,27 @@ export function createWorld(random) {
       isPolice: false,
       aiTimer: 0
     });
+  }
+
+  // Add parked cars for parking lots
+  for (let b of buildings) {
+    if (b.special === 'parking') {
+      for (let pc = 0; pc < 4; pc++) {
+        cars.push({
+          x: b.x + 24 + (pc % 2) * 55,
+          y: b.y + 24 + Math.floor(pc / 2) * 45,
+          vx: 0, vy: 0,
+          angle: (pc % 2 === 0) ? 0 : Math.PI,
+          speed: 0,
+          maxSpeed: 150,
+          color: ['#e53935', '#1e88e5', '#78909c', '#ffffff'][pc % 4],
+          type: 'sedan',
+          isPolice: false,
+          isParked: true,
+          aiTimer: 0
+        });
+      }
+    }
   }
 
   // Pedestrians
@@ -281,6 +308,7 @@ export function createWorld(random) {
     for (let i = 0; i < state.cars.length; i++) {
       if (p.inCar && p.carIndex === i) continue;
       const c = state.cars[i];
+      if (c.isParked) continue;
       c.aiTimer -= dt;
       if (c.aiTimer <= 0) {
         c.aiTimer = 3 + random() * 4;
