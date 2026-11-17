@@ -31,12 +31,12 @@ export function createRenderer(canvas) {
     ctx.translate(canvas.width / 2, canvas.height / 2);
     ctx.translate(-cam.x, -cam.y);
 
-    // Draw world ground / asphalt
-    ctx.fillStyle = '#1e222b';
+    // Draw world ground / blocks background
+    ctx.fillStyle = '#262c38';
     ctx.fillRect(0, 0, WORLD_SIZE, WORLD_SIZE);
 
-    // Draw grid roads
-    ctx.strokeStyle = '#2d3340';
+    // Draw grid roads (asphalt)
+    ctx.strokeStyle = '#4e596d';
     ctx.lineWidth = ROAD_WIDTH;
     ctx.lineCap = 'butt';
     for (let i = 0; i <= WORLD_SIZE; i += BLOCK_SIZE) {
@@ -45,6 +45,18 @@ export function createRenderer(canvas) {
       ctx.stroke();
       ctx.beginPath();
       ctx.moveTo(0, i); ctx.lineTo(WORLD_SIZE, i);
+      ctx.stroke();
+    }
+
+    // Draw white edge road lines / crosswalk markings
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+    ctx.lineWidth = 2;
+    for (let i = 0; i <= WORLD_SIZE; i += BLOCK_SIZE) {
+      ctx.beginPath();
+      ctx.moveTo(i - ROAD_WIDTH/2 + 4, 0); ctx.lineTo(i - ROAD_WIDTH/2 + 4, WORLD_SIZE);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, i - ROAD_WIDTH/2 + 4); ctx.lineTo(WORLD_SIZE, i - ROAD_WIDTH/2 + 4);
       ctx.stroke();
     }
 

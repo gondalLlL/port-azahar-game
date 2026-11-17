@@ -31,10 +31,17 @@ export function createWorld(random) {
       else if (cx >= 5120) district = DISTRICTS.HILLS;
 
       const height = Math.floor(20 + random() * 80);
+      const palette = district === DISTRICTS.NEON_MILE ? ['#4a148c', '#6a1b9a', '#8e24aa', '#311b92', '#4527a0'] :
+                      district === DISTRICTS.OLD_TOWN ? ['#b71c1c', '#d32f2f', '#8d6e63', '#6d4c41', '#a1887f'] :
+                      district === DISTRICTS.MARINA ? ['#00838f', '#00acc1', '#0097a7', '#006064', '#00838f'] :
+                      district === DISTRICTS.HILLS ? ['#2e7d32', '#388e3c', '#43a047', '#1b5e20', '#558b2f'] :
+                      ['#37474f', '#455a64', '#546e7a', '#78909c', '#37474f'];
+      const buildingColor = palette[Math.floor(random() * palette.length)];
+
       buildings.push({
         x, y, w, h, height,
         district: district.name,
-        color: district.color,
+        color: buildingColor,
         accent: district.accent,
         hasNeon: district === DISTRICTS.NEON_MILE && random() > 0.5,
         hasLights: random() > 0.3
